@@ -1,0 +1,124 @@
+[
+    {
+        productId: "65453ffd-e476-4b6b-a388-7e3de1bb632a",
+        name: "The Poplar Suede Sofa",
+        productImage: "https://cdn.sanity.io/images/ri847jqu/production/9b6a4fc8c65bbb4e5793fb0e1116b510d73dc9e8-630x375.png",
+        price: 980,
+        stock: 15,
+        description: "A timeless design, with premium materials features as one of our most popular and iconic pieces. The dandy chair is perfect for any stylish living space with beech legs and lambskin leather upholstery.",
+        category: "Sofas",
+        tags: ["popular products", "premium"],
+        sellerId: "seller-001"
+      },
+    {
+      name: "The Poplar suede sofa",
+      description: "A timeless design, with premium materials features as one of our most popular and iconic pieces. The dandy chair is perfect for any stylish living space with beech legs and lambskin leather upholstery.",
+      "image": "https://cdn.sanity.io/images/ri847jqu/production/9b6a4fc8c65bbb4e5793fb0e1116b510d73dc9e8-630x375.png",
+      "_id": "65453ffd-e476-4b6b-a388-7e3de1bb632a",
+      "features": [
+        "Premium material",
+        "Handmade upholster",
+        "Quality timeless classic"
+      ],
+      "dimensions": {
+        "width": "110cm",
+        "height": "110cm",
+        "depth": "50cm"
+      },
+      "category": {
+        "name": "Tableware",
+        "slug": "tableware"
+      },
+      "price": 980,
+      "tags": ["popular products"]
+    },
+    {
+      "_id": "6a2d63d9-01cb-4124-8a90-99800bb2bbe9",
+      "name": "The Steel Chair",
+      "description": "A timeless design, with premium materials features as one of our most popular and iconic pieces. The dandy chair is perfect for any stylish living space with beech legs and lambskin leather upholstery",
+      "features": [
+        "Premium material",
+        "Handmade upholstery",
+        "Quality timeless classic"
+      ],
+      "dimensions": {
+        "depth": "50cm",
+        "width": "75cm",
+        "height": "110cm"
+      },
+      "category": {
+        "name": "Chairs",
+        "slug": "chairs"
+      },
+      "image": "https://cdn.sanity.io/images/ri847jqu/production/b3bbbd269d31ce9b57b7a867bf0b7f6fdc5b3208-721x759.png",
+      "price": 250,
+      "tags": ["product detail", "hero"]
+    },
+    {
+      "_id": "product-1",
+      "name": "Rustic Vase Set",
+      "description": "A timeless design, with premium materials features as one of our most popular and iconic pieces. The dandy chair is perfect for any stylish living space with beech legs and lambskin leather upholstery.",
+      "features": [
+        "Premium material",
+        "Handmade upholstery",
+        "Quality timeless classic"
+      ],
+      "dimensions": {
+        "width": "75cm",
+        "height": "110cm",
+        "depth": "50cm"
+      },
+      "category": {
+        "name": "Plant Pots",
+        "slug": "plant-pots"
+      },
+      "image": "https://cdn.sanity.io/images/ri847jqu/production/2219cafc285ec13a2ed3f88aa36cbea852a11735-305x375.png",
+      "price": 210,
+      "tags": ["new ceramics"]
+    },
+    {
+      "name": "Bed",
+      "description": "A timeless design, with premium materials features as one of our most popular and iconic pieces. The dandy chair is perfect for any stylish living space with beech legs and lambskin leather upholstery.",
+      "_id": "product-10",
+      "features": [
+        "Premium material",
+        "Handmade upholstery",
+        "Quality timeless classic"
+      ],
+      "dimensions": {
+        "width": "75cm",
+        "height": "110cm",
+        "depth": "50cm"
+      },
+      "category": {
+        "name": "Tableware",
+        "slug": "tableware"
+      },
+      "image": "https://cdn.sanity.io/images/ri847jqu/production/b6551d6252d30e222875fbcd5d91c6edca324a1d-3518x3238.jpg",
+      "price": 250,
+      "tags": []
+    },
+    {
+      "name": "Wood Chair",
+      "description": "A timeless design, with premium materials features as one of our most popular and iconic pieces. The dandy chair is perfect for any stylish living space with beech legs and lambskin leather upholstery.",
+      "_id": "product-11",
+      "features": [
+        "Premium material",
+        "Handmade upholstery",
+        "Quality timeless classic"
+      ],
+      "dimensions": {
+        "width": "75cm",
+        "height": "110cm",
+        "depth": "50cm"
+      },
+      "category": {
+        "name": "Chairs",
+        "slug": "chairs"
+      },
+      "image": "https://cdn.sanity.io/images/ri847jqu/production/2c7c233904e6c98e27a2156dce5f008b1554d25d-2831x3534.jpg",
+      "price": 100,
+      "tags": []
+    }
+  ]
+  

@@ -3,7 +3,7 @@ export default {
     type: 'document',
     title: 'Product',
     fields: [
-      { name: 'productId', type: 'string', title: 'Product ID', readOnly: true },
+      { name: 'productId', type: 'string', title: 'Product ID'},
       { name: 'productImage' , type:'image', title: 'Product Image' ,options:{
         hotspot : true
       }},

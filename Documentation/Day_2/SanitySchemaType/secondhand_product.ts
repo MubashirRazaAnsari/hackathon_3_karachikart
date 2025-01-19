@@ -5,6 +5,10 @@ export default {
     fields: [
       { name: 'productId', type: 'string', title: 'Product ID', readOnly: true },
       { name: 'name', type: 'string', title: 'Name' },
+      { name: 'productImage' , type:'image', title: 'Product Image' ,options:{
+        hotspot : true
+      }},
+
       { name: 'price', type: 'number', title: 'Price' },
       { name: 'stock', type: 'number', title: 'Stock' },
       { name: 'sellerId', type: 'reference', to: [{ type: 'seller' }], title: 'Seller' },
