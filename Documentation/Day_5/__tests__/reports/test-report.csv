@@ -1,0 +1,18 @@
+Test Case ID,Test Case Description,Test Steps,Expected Result,Actual Result,Status,Severity Level,Assigned To,Remarks
+TC001,Product Grid Rendering,1. Load product page 2. Check product cards,Products display correctly with images and details,Products render as expected,Passed,High,Team,All products show correctly
+TC002,Add to Cart,1. Click add to cart 2. Check cart count,Product added to cart and count updates,Works as expected,Passed,High,Team,Cart updates instantly
+TC003,Wishlist Feature,1. Click wishlist icon 2. Check wishlist state,Product added to wishlist with visual feedback,Works as expected,Passed,Medium,Team,Animation smooth 
+TC004,Error Handling,1. Trigger API error 2. Check error message,Error boundary shows friendly message,Works as expected,Passed,High,Team,Error recovery works
+TC005,Performance,1. Run Lighthouse 2. Check scores,Score > 90 for all metrics,Achieved 95+,Passed,Medium,Team,Optimizations successful
+TC006,Responsive Design,1. Resize browser window 2. Check layout,Layout adjusts for mobile and desktop,Works as expected,Passed,High,Team,Responsive design works
+TC007,Search Functionality,1. Enter search term 2. Check results,Search returns relevant products,Works as expected,Passed,Medium,Team,Search works
+TC008,Filtering,1. Select category 2. Check filtered products,Products filtered by category,Works as expected,Passed,High,Team,Filtering works
+TC009,Sorting,1. Select sort option 2. Check sorted products,Products sorted by selected option,Works as expected,Passed,Medium,Team,Sorting works
+TC0010,Product Details,1. Click product 2. Check details,Product details displayed correctly,Works as expected,Passed,High,Team,Details display correctly
+TC0011,Wishlist Persistence,1. Add product to wishlist 2. Refresh page 3. Check wishlist state,Wishlist persists across page reloads,Works as expected,Passed,Medium,Team,Wishlist data persists
+TC0012,Cart Persistence,1. Add product to cart 2. Refresh page 3. Check cart state,Cart persists across page reloads,Works as expected,Passed,High,Team,Cart data persists
+TC0013,User Authentication,1. Login 2. Check authenticated state,User authenticated successfully,Works as expected,Passed,Medium,Team,Authentication works
+TC0014,User Registration,1. Register new account 2. Check registration status,User registered successfully,Works as expected,Passed,High,Team,Registration works
+TC0015,User Profile,1. Navigate to profile page 2. Check profile details,Profile details displayed correctly,Works as expected,Passed,Medium,Team,Profile display works
+TC0016,User Logout,1. Logout 2. Check logout state,User logged out successfully,Works as expected,Passed,High,Team,Logout works
+TC0017,Admin Dashboard,1. Navigate to admin dashboard 2. Check dashboard state,Admin dashboard accessible,Works as expected,Passed,High,Team,Admin access works
