@@ -8,12 +8,17 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { NextAuthProvider } from "./providers/NextAuthProvider";
 import { Toaster } from 'react-hot-toast';
 import { WishlistProvider } from './context/WishlistContext';
+import { CompareProvider } from './context/CompareContext';
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "KarachiKART - Your Ultimate Marketplace",
-  description: "Shop new, secondhand products and services",
+  title: 'KarachiKart',
+  description: 'Your app description',
+  viewport: 'width=device-width, initial-scale=1',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
@@ -28,18 +33,20 @@ export default function RootLayout({
 
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${inter.className} min-h-screen flex flex-col`}>
+      <body className={`${inter.className} min-h-screen flex flex-col overflow-x-hidden`}>
         <ErrorBoundary>
           <NextAuthProvider>
             <WishlistProvider>
-              <CartProvider>
-                {!isProductPage && <Navbar2 />}
-                <main className="flex-grow min-h-screen">
-                  {children}
-                </main>
-                <Footer />
-                <Toaster position="bottom-right" />
-              </CartProvider>
+              <CompareProvider>
+                <CartProvider>
+                  {!isProductPage && <Navbar2 />}
+                  <main className="flex-grow min-h-screen">
+                    {children}
+                  </main>
+                  <Footer />
+                  <Toaster position="bottom-right" />
+                </CartProvider>
+              </CompareProvider>
             </WishlistProvider>
           </NextAuthProvider>
         </ErrorBoundary>

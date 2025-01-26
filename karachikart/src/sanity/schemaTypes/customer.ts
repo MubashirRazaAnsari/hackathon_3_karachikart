@@ -1,4 +1,4 @@
-export default {
+const customerSchema = {
     name: 'customer',
     type: 'document',
     title: 'Customer',
@@ -30,4 +30,6 @@ export default {
       },
     ],
   };
+  
+export default customerSchema;
   

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { client } from '@/sanity/lib/client';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/app/api/auth/authOptions';
 
 export async function POST(req: Request) {
   try {
@@ -14,7 +14,15 @@ export async function POST(req: Request) {
       );
     }
 
-    const { items, total, shippingAddress, paymentInfo } = await req.json();
+    const data = await req.json();
+    
+    // Validate the order data
+    if (!data.items?.length || !data.totalAmount) {
+      return NextResponse.json(
+        { error: 'Invalid order data' },
+        { status: 400 }
+      );
+    }
 
     // Generate order number
     const orderNumber = `ORD${Date.now()}${Math.random().toString(36).substring(2, 7)}`.toUpperCase();
@@ -27,7 +35,7 @@ export async function POST(req: Request) {
         _type: 'reference',
         _ref: session.user.id
       },
-      items: items.map((item: any) => ({
+      items: data.items.map((item: any) => ({
         product: {
           _type: 'reference',
           _ref: item._id
@@ -35,12 +43,12 @@ export async function POST(req: Request) {
         quantity: item.quantity,
         price: item.price
       })),
-      total,
+      total: data.totalAmount,
       status: 'pending',
-      shippingAddress,
+      shippingAddress: data.shippingAddress,
       paymentInfo: {
         method: 'credit_card',
-        ...paymentInfo
+        ...data.paymentInfo
       },
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()

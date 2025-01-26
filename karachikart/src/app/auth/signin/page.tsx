@@ -37,8 +37,10 @@ export default function SignInPage() {
         toast.error(result.error);
       } else {
         toast.success('Signed in successfully');
-        router.push('/');
-        router.refresh();
+        setTimeout(() => {
+          router.push('/');
+          router.refresh();
+        }, 1000);
       }
     } catch (error) {
       console.error('Sign in error:', error);

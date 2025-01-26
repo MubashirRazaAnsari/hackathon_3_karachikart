@@ -1,13 +1,8 @@
 export interface OrderItem {
-  _id?: string;
-  product: {
-    _id: string;
-    name: string;
-    productImage: any;
-    price: number;
-  };
-  quantity: number;
+  _id: string;
+  name: string;
   price: number;
+  quantity: number;
 }
 
 export interface ShippingAddress {
@@ -20,23 +15,47 @@ export interface ShippingAddress {
 }
 
 export interface PaymentInfo {
-  method: string;
-  transactionId: string;
+  paymentIntentId: string;
   status: 'pending' | 'completed' | 'failed';
+  amount: number;
+  currency: string;
 }
 
 export interface Order {
   _id: string;
   orderNumber: string;
+  trackingNumber?: string;
   user: {
-    _ref: string;
+    _id: string;
+    name: string;
+    email: string;
   };
-  items: OrderItem[];
+  items: Array<{
+    _id: string;
+    product: {
+      _id: string;
+      name: string;
+      price: number;
+      productImage: string;
+    };
+    quantity: number;
+    price: number;
+  }>;
   total: number;
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  shippingAddress: ShippingAddress;
-  paymentInfo: PaymentInfo;
-  trackingNumber?: string;
+  shippingAddress: {
+    fullName: string;
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  paymentInfo: {
+    transactionId: string;
+    status: 'pending' | 'completed' | 'failed';
+    method: string;
+  };
   createdAt: string;
   updatedAt: string;
 } 

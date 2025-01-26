@@ -8,6 +8,7 @@ import { FaArrowLeft, FaTruck } from 'react-icons/fa';
 import { Order } from '@/types/order';
 import { urlFor } from '@/sanity/lib/image';
 import { toast } from 'react-hot-toast';
+import { client } from '@/sanity/lib/client';
 
 const statusOptions = [
   { value: 'pending', label: 'Pending' },
@@ -39,16 +40,29 @@ export default function AdminOrderDetailsPage({
 
   useEffect(() => {
     fetchOrder();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 
   const fetchOrder = async () => {
     try {
-      const response = await fetch(`/api/orders/${params.id}`);
-      if (!response.ok) throw new Error('Failed to fetch order');
-      const data = await response.json();
-      setOrder(data.order);
-      setTrackingNumber(data.order.trackingNumber || '');
-      setOrderStatus(data.order.status);
+      const order = await client.fetch<Order>(
+        `*[_type == "order" && _id == $id][0] {
+          ...,
+          items[] {
+            ...,
+            product->{
+              _id,
+              name,
+              price,
+              productImage
+            }
+          }
+        }`,
+        { id: params.id }
+      );
+      setOrder(order);
+      setTrackingNumber(order.trackingNumber || '');
+      setOrderStatus(order.status);
     } catch (error) {
       console.error('Error fetching order:', error);
       toast.error('Failed to fetch order details');

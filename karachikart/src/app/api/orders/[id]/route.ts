@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { client } from '@/sanity/lib/client';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/app/api/auth/authOptions';
 
 export async function PATCH(
   req: Request,

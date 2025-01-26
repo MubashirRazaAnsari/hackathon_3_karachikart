@@ -31,8 +31,8 @@ export default function ProductGrid({ products, showWishlist = true }: ProductGr
       return;
     }
 
-    if (isInWishlist(product._id)) {
-      removeFromWishlist(product._id);
+    if (isInWishlist(product._id || '')) {
+      removeFromWishlist(product._id || '');
       toast.success('Removed from wishlist');
     } else {
       addToWishlist(product);
@@ -48,7 +48,7 @@ export default function ProductGrid({ products, showWishlist = true }: ProductGr
             <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
               <Image
                 src={urlFor(product.productImage).url()}
-                alt={product.name}
+                alt={product.name || 'Product Image'}
                 fill
                 className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
               />
@@ -57,7 +57,7 @@ export default function ProductGrid({ products, showWishlist = true }: ProductGr
                   onClick={(e) => handleWishlistClick(e, product)}
                   className="absolute top-2 right-2 p-2 rounded-full bg-white/80 hover:bg-white transition-colors"
                 >
-                  {isInWishlist(product._id) ? (
+                  {isInWishlist(product._id || '') ? (
                     <FaHeart className="w-5 h-5 text-red-500" />
                   ) : (
                     <FaRegHeart className="w-5 h-5" />
@@ -80,7 +80,7 @@ export default function ProductGrid({ products, showWishlist = true }: ProductGr
             <p className="text-sm text-gray-500 truncate">
               {typeof product.category === 'string' 
                 ? product.category 
-                : product.category.name}
+                : product.category?.name || ''}
             </p>
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-gray-900">

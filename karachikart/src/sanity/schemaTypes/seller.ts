@@ -1,17 +1,44 @@
-export default {
-    name: 'seller',
-    type: 'document',
-    title: 'Seller',
-    fields: [
-      { name: 'sellerId', type: 'string', title: 'Seller ID' },
-      { name: 'name', type: 'string', title: 'Name' },
-      { name: 'contactInfo', type: 'object', fields: [
-        { name: 'email', type: 'string', title: 'Email' },
-        { name: 'phone', type: 'string', title: 'Phone' },
-      ], title: 'Contact Info' },
-      { name: 'products', type: 'array', of: [{ type: 'reference', to: [{ type: 'newProduct' }] }], title: 'Products' },
-      { name: 'reviews', type: 'array', of: [{ type: 'reference', to: [{ type: 'review' }] }], title: 'Reviews' },
-      { name: 'earnings', type: 'number', title: 'Earnings' },
-      { name: 'joinedDate', type: 'datetime', title: 'Joined Date' },
-    ],
-  };
+const sellerSchema = {
+  name: 'seller',
+  title: 'Seller',
+  type: 'document',
+  fields: [
+    {
+      name: 'name',
+      title: 'Name',
+      type: 'string',
+    },
+    {
+      name: 'contactInfo',
+      title: 'Contact Information',
+      type: 'object',
+      fields: [
+        { name: 'email', type: 'string' },
+        { name: 'phone', type: 'string' },
+      ],
+    },
+    {
+      name: 'businessDetails',
+      title: 'Business Details',
+      type: 'object',
+      fields: [
+        { name: 'businessName', type: 'string' },
+        { name: 'businessAddress', type: 'string' },
+        { name: 'taxId', type: 'string' },
+      ],
+    },
+    {
+      name: 'products',
+      title: 'Products',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'newProduct' }] }],
+    },
+    {
+      name: 'joinedDate',
+      title: 'Joined Date',
+      type: 'datetime',
+    },
+  ],
+};
+
+export default sellerSchema; 

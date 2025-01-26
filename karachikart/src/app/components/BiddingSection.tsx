@@ -6,7 +6,7 @@ import { serverClient } from '@/sanity/lib/client';
 import toast from 'react-hot-toast';
 
 interface Bid {
-  id: string;
+  _id: string;
   userId: string;
   userName: string;
   amount: number;

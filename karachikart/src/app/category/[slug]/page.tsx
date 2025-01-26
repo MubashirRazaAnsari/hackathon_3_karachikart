@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { client } from '@/sanity/lib/client';
-import { FaFilter, FaSort } from 'react-icons/fa';
+import { FaFilter } from 'react-icons/fa';
 import { Product } from '@/types';
 import ProductCard from '@/app/components/ProductCard';
 
@@ -19,11 +19,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [showFilters, setShowFilters] = useState(false);
 
-  useEffect(() => {
-    fetchProducts();
-  }, [params.slug, sortBy, priceRange]);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const query = `*[_type in ["newProduct", "secondhandProduct"] && category->name == $category && price >= $minPrice && price <= $maxPrice] {
         _id,
@@ -48,7 +44,11 @@ export default function CategoryPage({ params }: CategoryPageProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.slug, sortBy, priceRange]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   if (loading) {
     return <div>Loading...</div>;

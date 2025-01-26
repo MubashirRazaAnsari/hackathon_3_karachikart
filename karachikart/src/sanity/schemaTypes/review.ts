@@ -1,4 +1,4 @@
-export default {
+const reviewSchema = {
   name: 'review',
   title: 'Review',
   type: 'document',
@@ -12,29 +12,33 @@ export default {
     {
       name: 'comment',
       title: 'Comment',
-      type: 'text'
+      type: 'text',
+      validation: (Rule: any) => Rule.required()
     },
     {
       name: 'user',
       title: 'User',
       type: 'reference',
-      to: [{ type: 'user' }]
+      to: [{ type: 'customer' }],
+      validation: (Rule: any) => Rule.required()
     },
     {
       name: 'product',
       title: 'Product',
       type: 'reference',
-      to: [{ type: 'newProduct' }]
+      to: [
+        { type: 'newProduct' },
+        { type: 'secondhandProduct' }
+      ],
+      validation: (Rule: any) => Rule.required()
     },
     {
       name: 'createdAt',
       title: 'Created At',
       type: 'datetime',
-      options: {
-        dateFormat: 'YYYY-MM-DD',
-        timeFormat: 'HH:mm',
-        calendarTodayLabel: 'Today'
-      }
+      initialValue: () => new Date().toISOString()
     }
   ]
-}
+};
+
+export default reviewSchema;

@@ -5,16 +5,19 @@ import { Menu, Transition } from '@headlessui/react';
 import { UserCircleIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { signOut } from 'next-auth/react';
+import Image from 'next/image';
 
 export default function UserDropdown({ user }: { user: any }) {
   return (
     <Menu as="div" className="relative ml-3">
       <Menu.Button className="flex items-center">
         {user.image ? (
-          <img
-            className="h-8 w-8 rounded-full"
-            src={user.image}
+          <Image 
+            src={user.image} 
             alt={user.name || 'User'}
+            width={40}
+            height={40}
+            className="rounded-full"
           />
         ) : (
           <UserCircleIcon className="h-8 w-8 text-gray-600" />

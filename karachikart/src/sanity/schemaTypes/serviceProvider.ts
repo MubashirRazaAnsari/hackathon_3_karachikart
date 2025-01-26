@@ -1,18 +1,64 @@
-export default {
-    name: 'serviceProvider',
-    type: 'document',
-    title: 'Service Provider',
-    fields: [
-      { name: 'serviceProviderId', type: 'string', title: 'Service Provider ID', readOnly: true },
-      { name: 'name', type: 'string', title: 'Name' },
-      { name: 'contactInfo', type: 'object', fields: [
-        { name: 'email', type: 'string', title: 'Email' },
-        { name: 'phone', type: 'string', title: 'Phone' },
-      ], title: 'Contact Info' },
-      { name: 'servicesOffered', type: 'array', of: [{ type: 'reference', to: [{ type: 'service' }] }], title: 'Services Offered' },
-      { name: 'portfolio', type: 'array', of: [{ type: 'image' }], title: 'Portfolio' },
-      { name: 'reviews', type: 'array', of: [{ type: 'reference', to: [{ type: 'review' }] }], title: 'Reviews' },
-      { name: 'earnings', type: 'number', title: 'Earnings' },
-      { name: 'joinedDate', type: 'datetime', title: 'Joined Date' },
-    ],
-  };
+const serviceProviderSchema = {
+  name: 'serviceProvider',
+  title: 'Service Provider',
+  type: 'document',
+  fields: [
+    {
+      name: 'name',
+      title: 'Name',
+      type: 'string',
+    },
+    {
+      name: 'contactInfo',
+      title: 'Contact Information',
+      type: 'object',
+      fields: [
+        { name: 'email', type: 'string' },
+        { name: 'phone', type: 'string' },
+      ],
+    },
+    {
+      name: 'services',
+      title: 'Services',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'service' }] }],
+    },
+    {
+      name: 'availability',
+      title: 'Availability',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'day', type: 'string' },
+            { name: 'startTime', type: 'string' },
+            { name: 'endTime', type: 'string' },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'ratings',
+      title: 'Ratings',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'rating', type: 'number' },
+            { name: 'review', type: 'text' },
+            { name: 'createdAt', type: 'datetime' },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'joinedDate',
+      title: 'Joined Date',
+      type: 'datetime',
+    },
+  ],
+};
+
+export default serviceProviderSchema; 

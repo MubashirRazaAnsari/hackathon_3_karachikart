@@ -10,11 +10,8 @@ interface Review {
   _id: string;
   rating: number;
   comment: string;
-  user: {
-    _id: string;
-    name: string;
-  };
-  createdAt: string;
+  userName: string;
+  _createdAt: string;
 }
 
 interface ProductReviewsProps {
@@ -27,6 +24,7 @@ export default function ProductReviews({ productId, reviews = [] }: ProductRevie
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [localReviews, setLocalReviews] = useState<Review[]>(reviews);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +50,30 @@ export default function ProductReviews({ productId, reviews = [] }: ProductRevie
         createdAt: new Date().toISOString()
       };
 
-      await serverClient.create(review);
+      // Create the review through an API route instead of directly
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(review),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit review');
+      }
+
+      const newReview = await response.json();
+      
+      // Add the new review to local state
+      setLocalReviews([...localReviews, {
+        _id: newReview._id,
+        rating,
+        comment,
+        userName: session.user?.name || 'Anonymous',
+        _createdAt: new Date().toISOString()
+      }]);
+
       toast.success('Review submitted successfully');
       setComment('');
       setRating(5);
@@ -64,12 +85,20 @@ export default function ProductReviews({ productId, reviews = [] }: ProductRevie
     }
   };
 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   return (
     <div className="space-y-8">
       <h2 className="text-2xl font-bold">Reviews</h2>
       
       {session && (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow">
           <div>
             <label className="block text-sm font-medium text-gray-700">Rating</label>
             <div className="flex gap-1 mt-1">
@@ -88,14 +117,14 @@ export default function ProductReviews({ productId, reviews = [] }: ProductRevie
             </div>
           </div>
           
-          <div>
+          <div className='shadow-sm border p-3 rounded-lg'>
             <label className="block text-sm font-medium text-gray-700">Comment</label>
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               required
               rows={4}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full p-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
 
@@ -110,15 +139,22 @@ export default function ProductReviews({ productId, reviews = [] }: ProductRevie
       )}
 
       <div className="space-y-4">
-        {reviews.map((review: any) => (
-          <div key={review._id} className="border rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="flex text-yellow-400">
-                {Array.from({ length: review.rating }).map((_, i) => (
-                  <StarIcon key={i} className="h-5 w-5" />
-                ))}
+        {localReviews.map((review) => (
+          <div key={review._id} className="bg-white border rounded-lg p-4 shadow">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex flex-col gap-2">
+                <h1 className="text-lg font-medium text-gray-700">
+                  {review.userName}
+                </h1>
+                <div className="flex text-yellow-400">
+                  {Array.from({ length: review.rating }).map((_, i) => (
+                    <StarIcon key={i} className="h-5 w-5" />
+                  ))}
+                </div>
               </div>
-              <span className="text-sm text-gray-500">by {review.userName}</span>
+              <span className="text-sm text-gray-500">
+                {formatDate(review._createdAt)}
+              </span>
             </div>
             <p className="text-gray-700">{review.comment}</p>
           </div>

@@ -1,3 +1,4 @@
+import { serverClient } from '@/sanity/lib/client';
 import { NextResponse } from 'next/server';
 
 export async function GET() {

@@ -28,7 +28,7 @@ export function useOrder() {
         },
         body: JSON.stringify({
           items: cart.map(item => ({
-            id: item.id,
+            id: item._id,
             quantity: item.quantity,
             price: item.price,
           })),

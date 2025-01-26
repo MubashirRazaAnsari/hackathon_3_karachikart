@@ -1,80 +1,73 @@
-export default {
+const userSchema = {
   name: 'user',
-  type: 'document',
   title: 'User',
+  type: 'document',
   fields: [
     {
       name: 'name',
-      type: 'string',
       title: 'Name',
-      validation: (Rule: any) => Rule.required(),
+      type: 'string',
+      validation: (Rule: { required: () => any; }) => Rule.required(),
     },
     {
       name: 'email',
-      type: 'string',
       title: 'Email',
-      validation: (Rule: any) => Rule.required().email(),
+      type: 'string',
+      validation: (Rule: { required: () => { (): any; new(): any; email: { (): any; new(): any; }; }; }) => Rule.required().email(),
     },
     {
-      name: 'password',
-      type: 'string',
-      title: 'Password',
-      validation: (Rule: any) => Rule.required(),
+      name: 'image',
+      title: 'Profile Image',
+      type: 'image',
     },
     {
       name: 'role',
-      type: 'string',
       title: 'Role',
+      type: 'string',
       options: {
         list: [
           { title: 'Customer', value: 'customer' },
-          { title: 'Admin', value: 'admin' },
           { title: 'Seller', value: 'seller' },
-          { title: 'Service Provider', value: 'service_provider' },
-        ],
+          { title: 'Admin', value: 'admin' },
+          { title: 'Service Provider', value: 'service-provider' }
+        ]
       },
-      validation: (Rule: any) => Rule.required(),
+      initialValue: 'customer'
     },
     {
-      name: 'customerId',
-      type: 'reference',
-      title: 'Customer Reference',
-      to: [{ type: 'customer' }],
-      hidden: ({ document }: { document: any }) => document?.role !== 'customer',
+      name: 'contactInfo',
+      title: 'Contact Information',
+      type: 'object',
+      fields: [
+        { name: 'phone', type: 'string' },
+        { name: 'address', type: 'string' },
+      ],
     },
     {
-      name: 'sellerId',
-      type: 'reference',
-      title: 'Seller Reference',
-      to: [{ type: 'seller' }],
-      hidden: ({ document }: { document: any }) => document?.role !== 'seller',
-    },
-    {
-      name: 'serviceProviderId',
-      type: 'reference',
-      title: 'Service Provider Reference',
-      to: [{ type: 'serviceProvider' }],
-      hidden: ({ document }: { document: any }) => document?.role !== 'service_provider',
+      name: 'wishlist',
+      title: 'Wishlist',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: [{ type: 'newProduct' }]
+        }
+      ]
     },
     {
       name: 'createdAt',
-      type: 'datetime',
       title: 'Created At',
+      type: 'datetime',
       readOnly: true,
     },
-    {
-      name: 'lastLogin',
-      type: 'datetime',
-      title: 'Last Login',
-    },
   ],
-  indexes: [
-    {
-      name: 'email',
-      spec: {
-        unique: true,
-        fields: ['email'],
-      },
+  preview: {
+    select: {
+      title: 'name',
+      subtitle: 'email',
+      media: 'image',
     },
-  ],
-} 
+  },
+};
+
+export default userSchema; 

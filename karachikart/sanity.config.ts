@@ -12,7 +12,6 @@ import {deskTool} from 'sanity/desk'
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
 import {apiVersion, dataset, projectId} from './src/sanity/env'
 import {schema} from './src/sanity/schemaTypes'
-import {structure} from './src/sanity/structure'
 
 export default defineConfig({
   name: 'default',
@@ -25,10 +24,42 @@ export default defineConfig({
     // Vision is for querying with GROQ from inside the Studio
     // https://www.sanity.io/docs/the-vision-plugin
     visionTool(),
-    deskTool(),
+    deskTool({
+      structure: (S) =>
+        S.list()
+          .title('Content')
+          .items([
+            S.listItem()
+              .title('Reviews')
+              .child(
+                S.documentList()
+                  .title('Reviews')
+                  .filter('_type == "review"')
+              ),
+            // Add other document types here
+            ...S.documentTypeListItems().filter(
+              (listItem) => !['review'].includes(listItem.getId() || '')
+            ),
+          ]),
+    }),
   ],
   schema,
-  auth: {
-    redirectOnSingle: false,
-  },
+  document: {
+    // New documents will be created as drafts
+    newDocumentOptions: (prev, { creationContext }) => {
+      if (creationContext.type === 'document') {
+        return prev.filter((template) => template.templateId === 'review')
+      }
+      return prev
+    },
+    // Enable the "Create new document" button
+    actions: (prev, { schemaType }) => {
+      if (schemaType === 'review') {
+        return prev.filter(({ action }) => 
+          ['create', 'update', 'delete', 'publish'].includes(action || '')
+        )
+      }
+      return prev
+    }
+  }
 })

@@ -8,13 +8,16 @@ import { FaTruck, FaBox, FaCheck } from 'react-icons/fa';
 import { client } from '@/sanity/lib/client';
 import { urlFor } from '@/sanity/lib/image';
 import Breadcrumb from '@/app/components/shared/Breadcrumb';
+import TrackingButton from '@/app/components/TrackingButton';
+
 
 interface OrderItem {
   _id: string;
   product: {
     _id: string;
     name: string;
-    productImage: any;
+    productImage?: any;
+    image?: string;
     price: number;
   };
   quantity: number;
@@ -46,6 +49,39 @@ const statusSteps = [
   { status: 'delivered', label: 'Delivered', icon: FaCheck },
 ];
 
+const FALLBACK_IMAGE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+
+function getImageUrl(product: any) {
+  if (!product) return FALLBACK_IMAGE;
+  
+  try {
+    // Case 1: Handle Sanity image
+    if (product.productImage?._type === 'image') {
+      return urlFor(product.productImage)
+        .width(400)
+        .height(400)
+        .fit('crop')
+        .crop('center')
+        .url();
+    }
+    
+    // Case 2: Handle direct image URL
+    if (product.image && typeof product.image === 'string') {
+      return product.image;
+    }
+    
+    // Case 3: Handle productImage as string URL
+    if (product.productImage && typeof product.productImage === 'string') {
+      return product.productImage;
+    }
+
+    return FALLBACK_IMAGE;
+  } catch (error) {
+    console.error('Error processing image:', error);
+    return FALLBACK_IMAGE;
+  }
+}
+
 export default function OrderDetailsPage({
   params,
 }: {
@@ -70,6 +106,7 @@ export default function OrderDetailsPage({
                 _id,
                 name,
                 productImage,
+                image,
                 price
               },
               quantity,
@@ -165,7 +202,7 @@ export default function OrderDetailsPage({
                 width: `${((currentStepIndex + 1) / statusSteps.length) * 100}%`,
               }}
             />
-            <div className="relative flex justify-between">
+            <div className="relative flex justify-between my-2">
               {statusSteps.map((step, index) => {
                 const Icon = step.icon;
                 const isCompleted = index <= currentStepIndex;
@@ -200,14 +237,18 @@ export default function OrderDetailsPage({
                 <div key={item._id} className="py-4 flex items-center">
                   <div className="relative w-20 h-20 flex-shrink-0">
                     <Image
-                      src={urlFor(item.product.productImage).url()}
-                      alt={item.product.name}
+                      src={getImageUrl(item.product)}
+                      alt={item.product?.name || 'Product image'}
                       fill
                       className="object-cover rounded"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = FALLBACK_IMAGE;
+                      }}
                     />
                   </div>
                   <div className="ml-6 flex-1">
-                    <h3 className="font-medium">{item.product.name}</h3>
+                    <h3 className="font-medium">{item.product?.name || 'Product'}</h3>
                     <p className="text-sm text-gray-500">
                       Quantity: {item.quantity}
                     </p>
@@ -246,6 +287,11 @@ export default function OrderDetailsPage({
             </div>
           )}
         </div>
+
+        <TrackingButton 
+          trackingNumber={order.trackingNumber} 
+          orderNumber={order.orderNumber}
+        />
       </div>
     </div>
   );

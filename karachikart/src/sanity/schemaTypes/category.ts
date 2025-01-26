@@ -1,4 +1,4 @@
-export default {
+const categorySchema = {
     name: 'category',
     type: 'document',
     title: 'Category',
@@ -9,3 +9,5 @@ export default {
       { name: 'tags', type: 'array', of: [{ type: 'string' }], title: 'Tags' },
     ],
   };
+
+export default categorySchema;

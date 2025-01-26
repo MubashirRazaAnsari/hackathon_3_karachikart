@@ -54,7 +54,7 @@ export default function SearchBar() {
   }, [searchTerm]);
 
   const handleResultClick = (productId: string) => {
-    router.push(`/product/${productId}`);
+    router.push(`/new/${productId}`);
     setShowResults(false);
     setSearchTerm('');
   };
@@ -68,7 +68,8 @@ export default function SearchBar() {
           placeholder="Search products..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="bg-gray-100 border-none outline-none w-[180px] lg:w-[200px]"
+          className="bg-gray-100 border-none outline-none w-[180px] md:w-[220px] lg:w-[300px]"
+          spellCheck="false"
         />
         {searchTerm && (
           <button
@@ -89,12 +90,12 @@ export default function SearchBar() {
             <button
               key={product._id}
               className="w-full flex items-center gap-4 p-4 hover:bg-gray-50 text-left"
-              onClick={() => handleResultClick(product._id)}
+              onClick={() => handleResultClick(product._id || '')}
             >
               <div className="relative w-12 h-12 flex-shrink-0">
                 <Image
                   src={urlFor(product.productImage).url()}
-                  alt={product.name}
+                  alt={product.name || 'Product Image'}
                   fill
                   className="object-cover rounded"
                 />

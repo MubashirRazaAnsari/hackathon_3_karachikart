@@ -1,14 +1,11 @@
 'use client';
 import React from 'react'
 import Card from './Card'
-
-interface Product {
-    id: string;
-    name: string;
-    category: string | { name: string; slug?: string };
-    image: string;
-    price: number;
-}
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Navigation } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/navigation'
+import { Product } from '@/types/index';
 
 interface CardgridProps {
     products: Product[];
@@ -18,6 +15,20 @@ interface CardgridProps {
 }
 
 export default function Cardgrid({ products, gridtitle, lggrid, buttontext }: CardgridProps) {
+    const processProduct = (product: any) => {
+        const categoryName = typeof product.category === 'object' && product.category 
+            ? product.category.name 
+            : (typeof product.category === 'string' ? product.category : 'Uncategorized');
+
+        return {
+            id: product.id?.toString() ?? '',
+            title: product.name ?? '',
+            category: categoryName,
+            image: product.productImage || product.image || '/images/product-placeholder.png',
+            price: product.price ?? 0
+        };
+    };
+
     return (
         <div>
             {gridtitle && (
@@ -30,19 +41,42 @@ export default function Cardgrid({ products, gridtitle, lggrid, buttontext }: Ca
                     )}
                 </div>
             )}
-            <div className={`grid grid-cols-2 md:grid-cols-3 ${lggrid ? 'lg:grid-cols-4' : ''} gap-6`}>
-                {products.map((product) => (
-                    <Card
-                        key={product.id}
-                        id={product.id}
-                        title={product.name}
-                        category={product.category}
-                        image={product.image}
-                        price={product.price}
-                    />
-                ))}
+            
+            <div className="relative">
+                <Swiper
+                    modules={[Navigation]}
+                    spaceBetween={24}
+                    slidesPerView={2}
+                    navigation={{
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
+                    }}
+                    breakpoints={{
+                        640: {
+                            slidesPerView: 2,
+                        },
+                        768: {
+                            slidesPerView: 3,
+                        },
+                        1024: {
+                            slidesPerView: lggrid ? 4 : 3,
+                        },
+                    }}
+                >
+                    {products.map((product) => {
+                        const processedProduct = processProduct(product);
+                        return (
+                            <SwiperSlide key={processedProduct.id}>
+                                <Card {...processedProduct} />
+                            </SwiperSlide>
+                        );
+                    })}
+                </Swiper>
+
+                {/* Navigation arrows */}
+                {/* <div className="swiper-button-prev !-left-4 lg:!-left-6 !text-black !h-full !top-0 !mt-0 !w-12 bg-gradient-to-r from-white via-white/70 to-transparent !scale-75 lg:!scale-100"></div>
+                <div className="swiper-button-next !-right-4 lg:!-right-6 !text-black !h-full !top-0 !mt-0 !w-12 bg-gradient-to-l from-white via-white/70 to-transparent !scale-75 lg:!scale-100"></div> */}
             </div>
         </div>
     )
 }
-

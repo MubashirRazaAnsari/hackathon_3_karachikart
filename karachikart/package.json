@@ -7,13 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "import-data": "node script/importSanityData.mjs"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
     "@sanity/image-url": "^1.1.0",
     "@sanity/vision": "^3.70.0",
+    "@stripe/react-stripe-js": "^3.1.1",
+    "@stripe/stripe-js": "^5.5.0",
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.7",
@@ -25,13 +27,19 @@
     "next-sanity": "^9.8.37",
     "react": "^18",
     "react-dom": "^18",
+    "react-hook-form": "^7.54.2",
     "react-hot-toast": "^2.5.1",
     "react-icons": "^5.4.0",
     "react-responsive-carousel": "^3.2.23",
     "react-toastify": "^11.0.3",
     "recharts": "^2.15.0",
     "sanity": "^3.70.0",
-    "styled-components": "^6.1.14"
+    "slugify": "^1.6.6",
+    "stripe": "^17.5.0",
+    "styled-components": "^6.1.14",
+    "swiper": "^11.2.1",
+    "swr": "^2.3.0",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",

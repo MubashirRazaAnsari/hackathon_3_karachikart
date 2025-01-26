@@ -19,13 +19,13 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
   const { addToCart } = useCart();
 
   const handleAddToCart = () => {
-    const cartItem: CartItem = {
-      _id: product._id,
-      name: product.name,
+    const cartItem: Product = {
+      _id: product._id || '',
+      name: product.name || '',
       price: product.price,
       productImage: product.productImage ? urlFor(product.productImage).url() : (product.image || '/placeholder.jpg'),
-      category: typeof product.category === 'string' ? product.category : product.category.name,
-      description: product.description,
+      category: product.category || { name: 'Uncategorized' },
+      description: product.description || '',
       stock: product.stock || 0,
       quantity: 1
     };

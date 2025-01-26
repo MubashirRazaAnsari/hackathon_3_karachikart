@@ -1,6 +1,6 @@
 import axios from 'axios';
-import {client} from 'sanity'
-  import slugify from 'slugify';
+import {client} from '@/sanity/lib/client'
+import slugify from 'slugify';
 
   async function uploadImageToSanity(imageUrl: string ): Promise<string|null> {
 

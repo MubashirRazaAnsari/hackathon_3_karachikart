@@ -2,7 +2,6 @@ import { createClient } from '@sanity/client';
 import axios from 'axios';
 import dotenv from 'dotenv';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { categories } from '../data/new-products';
 import { newProducts } from '../data/new-products';
 import { secondhandProducts } from '../data/secondhand-products';

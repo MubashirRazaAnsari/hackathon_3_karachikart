@@ -5,7 +5,6 @@ import { useSession } from 'next-auth/react';
 import { FaBox, FaTruck, FaCheck, FaTimes } from 'react-icons/fa';
 import Link from 'next/link';
 import Image from 'next/image';
-import { urlFor } from '@/sanity/lib/image';
 
 interface OrderItem {
   _id: string;

@@ -1,5 +1,4 @@
 import { createClient } from 'next-sanity'
-import { config } from './config'
 
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
