@@ -4,22 +4,28 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '*',
+        hostname: 'cdn.sanity.io',
+      },
+      {
+        protocol: 'https',
+        hostname: 'fakestoreapi.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
       },
     ],
-    unoptimized: true,
-    domains: [
-      'cdn.sanity.io',
-      'lh3.googleusercontent.com',
-      // Add other domains you're loading images from
-    ],
+    // Disable optimization if using `output: 'export'`
+    unoptimized: process.env.NODE_ENV === 'production',
   },
+  // Add this if you're doing static export
+  output: 'export',
   typescript: {
     ignoreBuildErrors: false,
   },
   eslint: {
     ignoreDuringBuilds: false,
   },
-}
+};
 
-module.exports = nextConfig 
+module.exports = nextConfig;
