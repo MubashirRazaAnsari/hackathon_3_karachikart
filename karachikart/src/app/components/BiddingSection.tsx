@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import { serverClient } from '@/sanity/lib/client';
+import toast from 'react-hot-toast';
 
 interface Bid {
   id: string;
@@ -23,109 +25,118 @@ export default function BiddingSection({
   productId, 
   currentPrice, 
   highestBid, 
-  bids, 
+  bids = [], 
   endTime 
 }: BiddingSectionProps) {
   const { data: session } = useSession();
-  const [bidAmount, setBidAmount] = useState<number>(highestBid + 1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const timeLeft = new Date(endTime).getTime() - new Date().getTime();
-  const isEnded = timeLeft <= 0;
+  const [bidAmount, setBidAmount] = useState(highestBid ? highestBid + 1 : currentPrice);
+  const [timeLeft, setTimeLeft] = useState('');
+  const [isEnded, setIsEnded] = useState(false);
 
-  const handlePlaceBid = async (e: React.FormEvent) => {
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const end = new Date(endTime).getTime();
+      const distance = end - now;
+
+      if (distance < 0) {
+        setIsEnded(true);
+        setTimeLeft('Auction ended');
+        clearInterval(interval);
+      } else {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [endTime]);
+
+  const handleBid = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!session || isEnded) return;
+    if (!session) {
+      toast.error('Please sign in to place a bid');
+      return;
+    }
 
-    setIsSubmitting(true);
+    if (bidAmount <= highestBid) {
+      toast.error('Bid amount must be higher than current highest bid');
+      return;
+    }
+
     try {
-      const response = await fetch('/api/bids', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const bid = {
+        _type: 'bid',
+        amount: bidAmount,
+        product: {
+          _type: 'reference',
+          _ref: productId
         },
-        body: JSON.stringify({
-          productId,
-          amount: bidAmount,
-        }),
-      });
+        user: {
+          _type: 'reference',
+          _ref: session.user.id
+        }
+      };
 
-      if (!response.ok) throw new Error('Failed to place bid');
-
-      // Refresh the page or update the UI
-      window.location.reload();
+      await serverClient.create(bid);
+      toast.success('Bid placed successfully');
     } catch (error) {
-      console.error('Error placing bid:', error);
-    } finally {
-      setIsSubmitting(false);
+      toast.error('Failed to place bid');
     }
   };
 
   return (
-    <div className="border rounded-lg p-6 space-y-6">
+    <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <p className="text-sm text-gray-600">Current Price</p>
+          <p className="text-sm text-gray-500">Current Price</p>
           <p className="text-2xl font-bold">${currentPrice}</p>
         </div>
         <div>
-          <p className="text-sm text-gray-600">Highest Bid</p>
-          <p className="text-2xl font-bold text-green-600">${highestBid}</p>
+          <p className="text-sm text-gray-500">Highest Bid</p>
+          <p className="text-2xl font-bold">${highestBid || currentPrice}</p>
         </div>
       </div>
 
-      {!isEnded ? (
-        <div className="space-y-4">
-          <p className="text-sm text-gray-600">Time Left</p>
-          <div className="grid grid-cols-4 gap-2 text-center">
-            {/* Add countdown timer here */}
+      <div className="bg-gray-100 p-4 rounded-lg">
+        <p className="text-sm font-medium">Time Left:</p>
+        <p className="text-lg">{timeLeft}</p>
+      </div>
+
+      {!isEnded && (
+        <form onSubmit={handleBid} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Your Bid</label>
+            <input
+              type="number"
+              min={highestBid ? highestBid + 1 : currentPrice}
+              value={bidAmount}
+              onChange={(e) => setBidAmount(Number(e.target.value))}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
           </div>
 
-          {session ? (
-            <form onSubmit={handlePlaceBid} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Your Bid</label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-gray-500 sm:text-sm">$</span>
-                  </div>
-                  <input
-                    type="number"
-                    min={highestBid + 1}
-                    step="0.01"
-                    value={bidAmount}
-                    onChange={(e) => setBidAmount(Number(e.target.value))}
-                    className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
-                  />
-                </div>
-              </div>
-              <button
-                type="submit"
-                disabled={isSubmitting || bidAmount <= highestBid}
-                className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 disabled:opacity-50"
-              >
-                {isSubmitting ? 'Placing Bid...' : 'Place Bid'}
-              </button>
-            </form>
-          ) : (
-            <p className="text-center text-gray-600">Please sign in to place a bid</p>
-          )}
-        </div>
-      ) : (
-        <div className="text-center text-red-600">
-          <p>Auction Ended</p>
-        </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+          >
+            Place Bid
+          </button>
+        </form>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-2">
         <h3 className="font-medium">Bid History</h3>
-        <div className="space-y-2">
-          {bids.map((bid) => (
-            <div key={bid.id} className="flex justify-between text-sm">
-              <span>{bid.userName}</span>
-              <span className="font-medium">${bid.amount}</span>
-            </div>
-          ))}
-        </div>
+        {bids.map((bid) => (
+          <div key={bid._id} className="flex justify-between text-sm">
+            <span>{bid.userName}</span>
+            <span>${bid.amount}</span>
+          </div>
+        ))}
       </div>
     </div>
   );

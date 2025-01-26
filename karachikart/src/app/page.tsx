@@ -6,8 +6,15 @@ import Cardgrid from "./components/Cardgrid";
 import React, { useEffect, useState } from "react";
 import ImageWithFallback from './components/ImageWithFallback';
 import ProductListingSkeleton from "./components/ProductListingSkeleton";
+import { client } from '@/sanity/lib/client';
+import ProductGrid from './components/ProductGrid';
+import { Carousel } from 'react-responsive-carousel';
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { urlFor } from '@/sanity/lib/image';
+import { Product } from '@/types';
 
-interface Product {
+// Interface for external API products
+interface ExternalProduct {
   id: string;
   name: string;
   price: number;
@@ -22,11 +29,12 @@ interface Product {
 
 export default function Home() {
   // Separate states for different product sections
-  const [trendingProducts, setTrendingProducts] = useState<Product[]>([]);
-  const [mensProducts, setMensProducts] = useState<Product[]>([]);
-  const [womensProducts, setWomensProducts] = useState<Product[]>([]);
-  const [funitureProducts ,setFunitureProducts] = useState<Product[]>([])
+  const [trendingProducts, setTrendingProducts] = useState<ExternalProduct[]>([]);
+  const [mensProducts, setMensProducts] = useState<ExternalProduct[]>([]);
+  const [womensProducts, setWomensProducts] = useState<ExternalProduct[]>([]);
+  const [furnitureProducts, setFurnitureProducts] = useState<ExternalProduct[]>([]);
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [newProducts, setNewProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch data for different sections
@@ -60,14 +68,39 @@ export default function Home() {
           name: item.title
         })));
 
-        // Fetch featured products (using different endpoint or filter)
-        const featuredRes = await fetch('https://fakestoreapi.com/products?limit=8');
-        const featuredData = await featuredRes.json();
-        setFeaturedProducts(featuredData.map((item: any) => ({
-          ...item,
-          id: item.id.toString(),
-          name: item.title
-        })));
+        // Fetch featured products for carousel
+        const featured = await client.fetch(`
+          *[_type == "newProduct" && isFeatured == true][0...5] {
+            _id,
+            name,
+            price,
+            description,
+            category->{
+              name
+            },
+            productImage,
+            rating
+          }
+        `);
+
+        // Fetch latest products for grid
+        const latest = await client.fetch(`
+          *[_type == "newProduct"] | order(_createdAt desc)[0...6] {
+            _id,
+            name,
+            price,
+            description,
+            category->{
+              name
+            },
+            productImage,
+            rating
+          }
+        `);
+
+        setFeaturedProducts(featured);
+        setNewProducts(latest);
+
         const furnitureRes = await fetch('https://hackathon-apis.vercel.app/api/products?limit=10')
         const furnitureData = await furnitureRes.json();
         const mappedFurnitureData = furnitureData.map((item: any) => ({
@@ -82,7 +115,7 @@ export default function Home() {
             count: item.rating?.count || 0
           }
         }));
-        setFunitureProducts(mappedFurnitureData);
+        setFurnitureProducts(mappedFurnitureData);
 
         setLoading(false);
       } catch (error) {
@@ -94,11 +127,11 @@ export default function Home() {
     fetchAllData();
   }, []);
 
-  // if (loading) {
-  //   return <div className="min-h-screen flex items-center justify-center">
-  //     <h1 className="text-2xl font-medium">Loading...</h1>
-  //   </div>;
-  // }
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">
+      <h1 className="text-2xl font-medium">Loading...</h1>
+    </div>;
+  }
 
   return (
     <main className="min-h-screen">
@@ -128,13 +161,12 @@ export default function Home() {
       {/* Trending Section */}
       <section className="w-full px-4 my-16">
         <div className="max-w-[1440px] mx-auto">
-          { loading? <ProductListingSkeleton /> :
           <Cardgrid
             lggrid={true}
             gridtitle="Trending Now"
             buttontext="Shop"
             products={trendingProducts}
-          />}
+          />
         </div>
       </section>
 
@@ -161,26 +193,20 @@ export default function Home() {
       <section className="w-full px-4 my-16">
         <div className="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div>
-          {loading? <ProductListingSkeleton /> :
-
-
             <Cardgrid
               lggrid={false}
               gridtitle="Men's Collection"
               buttontext="Men"
               products={mensProducts}
-            />}
+            />
           </div>
           <div>
-            {loading? <ProductListingSkeleton /> :
-
-            
             <Cardgrid
               lggrid={false}
               gridtitle="Women's Collection"
               buttontext="Women"
               products={womensProducts}
-            />}
+            />
           </div>
         </div>
       </section>
@@ -188,11 +214,47 @@ export default function Home() {
       {/* Featured Products Section */}
       <section className="w-full px-4 my-16">
         <div className="max-w-[1440px] mx-auto">
-          <Cardgrid
-            lggrid={true}
-            gridtitle="Featured Products"
-            buttontext="Shop"
-            products={featuredProducts}
+          <h2 className="text-2xl font-bold mb-6">Featured Products</h2>
+          <Carousel
+            showArrows={true}
+            showStatus={false}
+            showThumbs={false}
+            infiniteLoop={true}
+            autoPlay={true}
+            interval={5000}
+            className="max-w-4xl mx-auto"
+          >
+            {featuredProducts.map((product) => (
+              <Link 
+                key={product._id} 
+                href={product.productImage ? `/new/${product._id}` : `/products/${product._id}`}
+              >
+                <div className="relative aspect-[16/9]">
+                  <Image
+                    src={product.productImage ? urlFor(product.productImage).url() : product.image}
+                    alt={product.name}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4">
+                    <h3 className="text-xl font-bold">{product.name}</h3>
+                    <p className="text-lg">${product.price}</p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </Carousel>
+        </div>
+      </section>
+
+      {/* Latest Products Grid */}
+      <section className="w-full px-4 my-16">
+        <div className="max-w-[1440px] mx-auto">
+          <h2 className="text-2xl font-bold mb-6">Latest Products</h2>
+          <ProductGrid 
+            products={newProducts}
+            showBidding={false}
+            productType="new"
           />
         </div>
       </section>
@@ -255,15 +317,12 @@ export default function Home() {
       </section>
       <section className="w-full px-4 my-16">
         <div className="max-w-[1440px] mx-auto">
-        {loading? <ProductListingSkeleton /> :
-
-
           <Cardgrid
             lggrid={true}
             gridtitle="Funiture"
             buttontext="Shop"
-            products={funitureProducts}
-          />}
+            products={furnitureProducts}
+          />
         </div>
       </section>
     </main>

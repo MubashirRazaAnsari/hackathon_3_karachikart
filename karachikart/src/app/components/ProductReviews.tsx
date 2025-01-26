@@ -2,14 +2,18 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { serverClient } from '@/sanity/lib/client';
 import { StarIcon } from '@heroicons/react/24/solid';
+import toast from 'react-hot-toast';
 
 interface Review {
-  id: string;
-  userId: string;
-  userName: string;
+  _id: string;
   rating: number;
   comment: string;
+  user: {
+    _id: string;
+    name: string;
+  };
   createdAt: string;
 }
 
@@ -18,52 +22,54 @@ interface ProductReviewsProps {
   reviews: Review[];
 }
 
-export default function ProductReviews({ productId, reviews: initialReviews }: ProductReviewsProps) {
-  const { data: session, status } = useSession();
-  const [reviews, setReviews] = useState<Review[]>(initialReviews);
+export default function ProductReviews({ productId, reviews = [] }: ProductReviewsProps) {
+  const { data: session } = useSession();
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmitReview = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!session) return;
+    if (!session) {
+      toast.error('Please sign in to leave a review');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/reviews', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const review = {
+        _type: 'review',
+        rating,
+        comment,
+        product: {
+          _type: 'reference',
+          _ref: productId
         },
-        body: JSON.stringify({
-          productId,
-          rating,
-          comment,
-        }),
-      });
+        user: {
+          _type: 'reference',
+          _ref: session.user.id
+        },
+        createdAt: new Date().toISOString()
+      };
 
-      if (!response.ok) throw new Error('Failed to submit review');
-
-      const newReview = await response.json();
-      setReviews([newReview, ...reviews]);
+      await serverClient.create(review);
+      toast.success('Review submitted successfully');
       setComment('');
       setRating(5);
     } catch (error) {
-      console.error('Error submitting review:', error);
+      console.error('Review submission error:', error);
+      toast.error('Failed to submit review');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div className="space-y-8">
-      {session ? (
-        <form onSubmit={handleSubmitReview} className="space-y-4">
+      <h2 className="text-2xl font-bold">Reviews</h2>
+      
+      {session && (
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Rating</label>
             <div className="flex gap-1 mt-1">
@@ -81,49 +87,42 @@ export default function ProductReviews({ productId, reviews: initialReviews }: P
               ))}
             </div>
           </div>
+          
           <div>
             <label className="block text-sm font-medium text-gray-700">Comment</label>
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              required
               rows={4}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
+
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 disabled:opacity-50"
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
           >
             {isSubmitting ? 'Submitting...' : 'Submit Review'}
           </button>
         </form>
-      ) : (
-        <p className="text-gray-600">Please sign in to leave a review.</p>
       )}
 
       <div className="space-y-4">
-        <h3 className="text-lg font-medium">Customer Reviews</h3>
-        {reviews.length > 0 ? (
-          reviews.map((review) => (
-            <div key={review.id} className="border-b pb-4">
-              <div className="flex items-center gap-2">
-                <div className="flex text-yellow-400">
-                  {[...Array(review.rating)].map((_, i) => (
-                    <StarIcon key={i} className="h-5 w-5" />
-                  ))}
-                </div>
-                <span className="text-sm text-gray-600">by {review.userName}</span>
+        {reviews.map((review: any) => (
+          <div key={review._id} className="border rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="flex text-yellow-400">
+                {Array.from({ length: review.rating }).map((_, i) => (
+                  <StarIcon key={i} className="h-5 w-5" />
+                ))}
               </div>
-              <p className="mt-2 text-gray-700">{review.comment}</p>
-              <p className="mt-1 text-sm text-gray-500">
-                {new Date(review.createdAt).toLocaleDateString()}
-              </p>
+              <span className="text-sm text-gray-500">by {review.userName}</span>
             </div>
-          ))
-        ) : (
-          <p className="text-gray-600">No reviews yet.</p>
-        )}
+            <p className="text-gray-700">{review.comment}</p>
+          </div>
+        ))}
       </div>
     </div>
   );

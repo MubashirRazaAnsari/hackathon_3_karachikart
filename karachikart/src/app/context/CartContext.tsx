@@ -1,111 +1,81 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { Product } from '@/types'
 
-interface CartItem {
-  id: string
-  name: string
-  price: number
-  image: string
-  category: string,
-  description: string
-  quantity: number
+export interface CartItem {
+  _id: string;
+  name: string;
+  price: number;
+  productImage: string;
+  category: string;
+  stock: number;
+  description: string;
+  quantity: number;
 }
 
 interface CartContextType {
-  cart: CartItem[]
-  addToCart: (product: CartItem) => void
-  removeFromCart: (productId: string) => void
-  updateQuantity: (productId: string, quantity: number) => void
-  clearCart: () => void
-  totalItems: number
-  totalPrice: number
+  cart: CartItem[];
+  totalItems: number;
+  totalPrice: number;
+  addToCart: (product: CartItem) => void;
+  removeFromCart: (productId: string) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
+  clearCart: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([])
-  const [totalItems, setTotalItems] = useState(0)
-  const [totalPrice, setTotalPrice] = useState(0)
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedCart = localStorage.getItem('cart')
-      if (savedCart) {
-        try {
-          const parsedCart: CartItem[] = JSON.parse(savedCart)
-          setCart(parsedCart)
-          // Calculate totals immediately after loading cart
-          const items = parsedCart.reduce((total, item) => total + item.quantity, 0)
-          const price = parsedCart.reduce((total, item) => total + (item.price * item.quantity), 0)
-          setTotalItems(items)
-          setTotalPrice(price)
-        } catch (e) {
-          console.error('Error parsing cart from localStorage:', e)
-          setCart([])
-        }
-      }
+    const savedCart = localStorage.getItem('cart')
+    if (savedCart) {
+      setCart(JSON.parse(savedCart))
     }
   }, [])
 
-  const calculateTotals = useCallback(() => {
-    const items = cart.reduce((total, item) => total + item.quantity, 0)
-    const price = cart.reduce((total, item) => total + (item.price * item.quantity), 0)
-    setTotalItems(items)
-    setTotalPrice(price)
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart))
   }, [cart])
 
-  // Save cart to localStorage and update totals whenever cart changes
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('cart', JSON.stringify(cart))
-      calculateTotals()
-    }
-  }, [cart, calculateTotals])
+  const addToCart = useCallback((product: CartItem) => {
+    setCart(prevCart => [...prevCart, product])
+  }, [])
 
-  const addToCart = (product: CartItem) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find(item => item.id === product.id)
-      if (existingItem) {
-        return prevCart.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      }
-      return [...prevCart, { ...product, quantity: 1 }]
-    })
-  }
+  const removeFromCart = useCallback((productId: string) => {
+    setCart(prevCart => prevCart.filter(item => item._id !== productId))
+  }, [])
 
-  const removeFromCart = (productId: string) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== productId))
-  }
+  const updateQuantity = useCallback((productId: string, quantity: number) => {
+    setCart(prevCart => prevCart.map(item =>
+      item._id === productId ? { ...item, quantity } : item
+    ))
+  }, [])
 
-  const updateQuantity = (productId: string, quantity: number) => {
-    if (quantity < 1) return
-    setCart(prevCart =>
-      prevCart.map(item =>
-        item.id === productId ? { ...item, quantity } : item
-      )
-    )
-  }
+  const clearCart = useCallback(() => {
+    setCart([]);
+  }, []);
+  
+  const totalItems = cart.length
+  
+  const totalPrice = cart.reduce((sum, item) => sum + (item.price || 0), 0)
 
-  const clearCart = () => {
-    setCart([])
+  const value = {
+    cart,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    totalItems,
+    totalPrice,
   }
 
   return (
-    <CartContext.Provider value={{
-      cart,
-      addToCart,
-      removeFromCart,
-      updateQuantity,
-      clearCart,
-      totalItems,
-      totalPrice
-    }}>
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   )

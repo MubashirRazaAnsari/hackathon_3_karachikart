@@ -5,6 +5,7 @@ export default {
     fields: [
       { name: 'customerId', type: 'string', title: 'Customer ID'},
       { name: 'name', type: 'string', title: 'Name' },
+      { name: 'password', type: 'string', title: 'Password' },
       { name: 'contactInfo', type: 'object', fields: [
         { name: 'email', type: 'string', title: 'Email' },
         { name: 'phone', type: 'string', title: 'Phone' },
@@ -18,6 +19,15 @@ export default {
       { name: 'orderHistory', type: 'array', of: [{ type: 'reference', to: [{ type: 'order' }] }], title: 'Order History' },
       { name: 'wishlist', type: 'array', of: [{ type: 'reference', to: [{ type: 'newProduct' }] }], title: 'Wishlist' },
       { name: 'joinedDate', type: 'datetime', title: 'Joined Date' },
+    ],
+    indexes: [
+      {
+        name: 'email',
+        spec: {
+          unique: true,
+          fields: ['contactInfo.email'],
+        },
+      },
     ],
   };
   

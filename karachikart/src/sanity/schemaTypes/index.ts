@@ -1,7 +1,7 @@
 import { type SchemaTypeDefinition } from 'sanity'
 import newProduct from './newProduct'
 import secondhandProduct from './secondhandProduct'
-import order from './order'
+import order from '../schemas/order'
 import review from './review'
 import customer from './customer'
 import seller from './seller'

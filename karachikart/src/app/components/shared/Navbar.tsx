@@ -91,7 +91,7 @@ const Navbar = () => {
           <Link href="/about" className="hover:text-gray-500">
             About
           </Link>
-          <Link href="/signup" className="hover:text-gray-500">
+          <Link href="/faq" className="hover:text-gray-500">
             FAQs
           </Link>
           {/* <Link href="/about" className="hover:text-gray-500">
@@ -122,7 +122,7 @@ const Navbar = () => {
             <Link href={'/wishlist'}>
             <FaHeart className="text-sm hover:text-gray-500 w-4 h-4" />
             </Link>
-            <Link href={"/signup"}>
+            <Link href={"/auth/signin"}>
             <FaUser className="text-sm hover:text-gray-500 w-4 h-4" />
 
             </Link>
@@ -154,7 +154,7 @@ const Navbar = () => {
           <Link href="/about" className="hover:text-gray-500">
             About
           </Link>
-          <Link href="/signup" className="hover:text-gray-500">
+          <Link href="/faq" className="hover:text-gray-500">
             FAQs
           </Link>
           </div>
