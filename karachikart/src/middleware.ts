@@ -6,13 +6,18 @@ export default withAuth(
     const token = req.nextauth.token;
     const path = req.nextUrl.pathname;
 
+    // Add public paths that don't need authentication
+    const publicPaths = ['/', '/auth/signin', '/auth/signup', '/api/auth'];
+    if (publicPaths.some(p => path.startsWith(p))) {
+      return NextResponse.next();
+    }
+
+    if (!token) {
+      return NextResponse.redirect(new URL('/auth/signin', req.url));
+    }
+
     // Protect dashboard routes based on role
     if (path.startsWith('/dashboard')) {
-      if (!token) {
-        return NextResponse.redirect(new URL('/auth/signin', req.url));
-      }
-
-      // Role-specific dashboard access
       if (path.startsWith('/dashboard/seller') && token.role !== 'seller') {
         return NextResponse.redirect(new URL('/dashboard', req.url));
       }
@@ -33,8 +38,9 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    "/dashboard/:path*",
-    "/checkout",
-    "/profile/:path*"
-  ]
+    '/dashboard/:path*',
+    '/checkout',
+    '/profile/:path*',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 }; 

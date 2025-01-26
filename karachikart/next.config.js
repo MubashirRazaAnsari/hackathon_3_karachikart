@@ -8,7 +8,11 @@ const nextConfig = {
       },
     ],
     unoptimized: true,
-    domains: ['cdn.sanity.io'],
+    domains: [
+      'cdn.sanity.io',
+      'lh3.googleusercontent.com',
+      // Add other domains you're loading images from
+    ],
   },
   typescript: {
     ignoreBuildErrors: false,
