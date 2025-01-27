@@ -1,5 +1,11 @@
 {
     "rewrites": [
         {"source": "/(.*)", "destination": "/"}
-    ]
+    ],
+    "version": 2,
+    "buildCommand": "next build",
+    "devCommand": "next dev",
+    "installCommand": "npm install",
+    "framework": "nextjs",
+    "outputDirectory": ".next"
 }
