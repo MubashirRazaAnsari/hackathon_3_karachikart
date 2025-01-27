@@ -74,8 +74,8 @@ export default function Cardgrid({ products, gridtitle, lggrid, buttontext }: Ca
                 </Swiper>
 
                 {/* Navigation arrows */}
-                {/* <div className="swiper-button-prev !-left-4 lg:!-left-6 !text-black !h-full !top-0 !mt-0 !w-12 bg-gradient-to-r from-white via-white/70 to-transparent !scale-75 lg:!scale-100"></div>
-                <div className="swiper-button-next !-right-4 lg:!-right-6 !text-black !h-full !top-0 !mt-0 !w-12 bg-gradient-to-l from-white via-white/70 to-transparent !scale-75 lg:!scale-100"></div> */}
+                <div className="swiper-button-prev !-left-4 lg:!-left-6 !text-black !h-full !top-0 !mt-0 !w-12 bg-gradient-to-r from-white via-white/70 to-transparent !scale-75 lg:!scale-100"></div>
+                <div className="swiper-button-next !-right-4 lg:!-right-6 !text-black !h-full !top-0 !mt-0 !w-12 bg-gradient-to-l from-white via-white/70 to-transparent !scale-75 lg:!scale-100"></div>
             </div>
         </div>
     )

@@ -44,26 +44,29 @@ export default async function AdminDashboard() {
         <div className="p-6">
           <h2 className="text-xl font-bold mb-4">Recent Orders</h2>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[640px]">
               <thead>
                 <tr className="text-left border-b">
-                  <th className="pb-3">Order ID</th>
-                  <th className="pb-3">Customer</th>
-                  <th className="pb-3">Total</th>
-                  <th className="pb-3">Status</th>
+                  <th className="pb-3 pr-4">Order ID</th>
+                  <th className="pb-3 pr-4">Customer</th>
+                  <th className="pb-3 pr-4">Total</th>
+                  <th className="pb-3 pr-4">Status</th>
                   <th className="pb-3">Date</th>
                 </tr>
               </thead>
               <tbody>
                 {stats.recentOrders.map((order: any) => (
                   <tr key={order._id} className="border-b">
-                    <td className="py-3">{order._id.slice(-6)}</td>
-                    <td className="py-3">{order.user?.name || 'Anonymous'}</td>
-                    <td className="py-3">${order.total}</td>
-                    <td className="py-3">{order.status}</td>
-                    <td className="py-3">
-                      {new Date(order._createdAt).toLocaleDateString()}
+                    <td className="py-3 pr-4">{order._id.slice(-6)}</td>
+                    <td className="py-3 pr-4">{order.user?.name || 'Anonymous'}</td>
+                    <td className="py-3 pr-4">${order.total}</td>
+                    <td className="py-3 pr-4">
+                      <span className="inline-block px-2 py-1 text-sm rounded-full whitespace-nowrap
+                        {order.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                        {order.status}
+                      </span>
                     </td>
+                    <td className="py-3">{new Date(order._createdAt).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>

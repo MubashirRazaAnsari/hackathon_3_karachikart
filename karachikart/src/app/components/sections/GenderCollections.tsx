@@ -46,7 +46,7 @@ function CollectionSection({ title, href, products }: {
       <Link href={href}>
         <div className="relative h-96">
           <Image
-            src={products[0]?.image || '/images/product-placeholder.png'}
+            src={products[0]?.productImage || '/images/product-placeholder.png'}
             alt={title}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"

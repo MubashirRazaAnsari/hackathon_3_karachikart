@@ -16,13 +16,15 @@ export default function ProfileLayout({
 }) {
   return (
     <div className="min-h-screen bg-gray-100">
-      <ProfileNavigation />
-      <main className="flex-1 p-4 sm:p-6 lg:p-8">
-        <Breadcrumb />
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6 lg:p-8">
-          {children}
-        </div>
-      </main>
+      <div className="flex pt-2">
+        <ProfileNavigation />
+        <main className="flex-1 p-2 overflow-auto max-h-[calc(100vh-4rem)]">
+          <Breadcrumb />
+          <div className="bg-white rounded-lg shadow p-4">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 } 

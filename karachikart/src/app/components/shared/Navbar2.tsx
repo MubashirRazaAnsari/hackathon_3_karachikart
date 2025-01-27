@@ -21,9 +21,9 @@ import {
 } from "react-icons/fa";
 import { useCart } from "@/app/context/CartContext";
 import SearchBar from "@/app/components/SearchBar";
-import { useSession } from "next-auth/react";
-import UserDropdown from "./UserDropdown";
+import { useSession, signOut } from "next-auth/react";
 import { useWishlist } from "@/app/context/WishlistContext";
+import { useRouter } from "next/navigation";
 
 interface MenuItem {
   label: string;
@@ -39,6 +39,7 @@ const Navbar = () => {
   const { totalItems } = useCart();
   const { wishlist } = useWishlist();
   const { data: session } = useSession();
+  const router = useRouter();
 
   // Close mobile menu on desktop resize
   useEffect(() => {
@@ -102,7 +103,7 @@ const Navbar = () => {
   const menuItems = getRoleBasedMenus();
 
   return (
-    <nav className="sticky top-0 z-50 bg-white shadow-md">
+    <nav className="sticky top-0 z-[1000] bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Navbar */}
         <div className="flex justify-between items-center h-16 md:h-20">
@@ -119,48 +120,55 @@ const Navbar = () => {
 
             {/* Products Dropdown */}
             <div
-              className="relative group"
+              className="relative group hover:cursor-pointer"
               onMouseEnter={() => setActiveDropdown("products")}
               onMouseLeave={() => setActiveDropdown(null)}
             >
               <button className="nav-link flex items-center">
                 Products <FaChevronDown className="ml-1" />
               </button>
-              <DropdownMenu
-                items={menuItems.products}
-                isOpen={activeDropdown === "products"}
-              />
+              <div className={`absolute top-full left-0 transform ${activeDropdown === "products" ? "opacity-100 visible" : "opacity-0 invisible"} transition-all duration-200`}>
+                <DropdownMenu
+                  items={menuItems.products}
+                  isOpen={true}
+                />
+              </div>
             </div>
 
             {/* Support Dropdown */}
             <div
-              className="relative group"
+              className="relative group hover:cursor-pointer"
               onMouseEnter={() => setActiveDropdown("help")}
               onMouseLeave={() => setActiveDropdown(null)}
             >
               <button className="nav-link flex items-center">
                 Support <FaChevronDown className="ml-1" />
               </button>
-              <DropdownMenu
-                items={menuItems.help}
-                isOpen={activeDropdown === "help"}
-              />
+              <div className={`absolute top-full left-0 transform ${activeDropdown === "help" ? "opacity-100 visible" : "opacity-0 invisible"} transition-all duration-200`}>
+                <DropdownMenu
+                  items={menuItems.help}
+                  isOpen={true}
+                />
+              </div>
             </div>
 
             {/* Account Dropdown */}
             {session && (
               <div
-                className="relative group"
+                className="relative group hover:cursor-pointer"
                 onMouseEnter={() => setActiveDropdown("customer")}
                 onMouseLeave={() => setActiveDropdown(null)}
               >
                 <button className="nav-link flex items-center">
                   Account <FaChevronDown className="ml-1" />
                 </button>
+                <div className={`absolute top-full left-0 transform ${activeDropdown === "customer" ? "opacity-100 visible" : "opacity-0 invisible"} transition-all duration-200`}>
                 <DropdownMenu
                   items={menuItems.customer}
-                  isOpen={activeDropdown === "customer"}
+                  isOpen={true}
                 />
+              </div>
+
               </div>
             )}
           </div>
@@ -286,15 +294,15 @@ const DropdownMenu = ({ items, isOpen }: { items: MenuItem[]; isOpen: boolean })
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-full left-0 bg-white shadow-lg rounded-md py-2 min-w-[200px]">
+    <div className="bg-white shadow-lg rounded-md py-2 min-w-[200px] z-[1001] relative mt-2">
       {items.map((item, index) => (
         <Link
           key={index}
           href={item.href}
-          className="flex items-center px-4 py-2 text-base text-gray-700 gap-2 hover:bg-gray-50"
+          className="flex items-center px-4 py-2 text-base text-gray-700 gap-2 hover:bg-gray-50 whitespace-nowrap"
         >
-          {item.icon && <item.icon  />}
-          {item.label}
+              {item.icon && <item.icon />}
+              {item.label}
         </Link>
       ))}
     </div>
@@ -307,5 +315,56 @@ const iconButton = "text-gray-600 hover:text-gray-900 p-2 relative";
 const badge = "absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center";
 const mobileNavLink = "block py-3 px-4 text-gray-700 hover:bg-gray-50 rounded-md";
 const mobileNavSubLink = "block py-2 px-6 text-gray-500 hover:bg-gray-50 rounded-md text-sm";
+
+// Update the UserDropdown component to handle hover instead of click
+const UserDropdown = ({ user }: { user: any }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  return (
+    <div 
+      className="relative"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      <button 
+        className="flex items-center space-x-2 text-gray-700 hover:text-gray-900"
+      >
+        <FaUser className="h-6 w-6" />
+      </button>
+
+      <div className={`absolute right-0 top-full transform ${
+        isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+      } transition-all duration-200 w-48 bg-white shadow-lg rounded-md py-2 mt-2 z-[1001]`}>
+        <div className="px-4 py-2 border-b border-gray-100">
+          <p className="text-sm font-medium text-gray-900">{user.name}</p>
+          <p className="text-sm text-gray-500 truncate">{user.email}</p>
+        </div>
+
+        <Link
+          href="/profile"
+          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+        >
+          Profile
+        </Link>
+        
+        <Link
+          href="/profile/orders"
+          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+        >
+          Orders
+        </Link>
+
+        <button
+          onClick={() => signOut()}
+          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+        >
+          Sign Out
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export default Navbar;

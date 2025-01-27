@@ -16,7 +16,7 @@ declare module 'next-auth' {
       email?: string | null;
       image?: string | null;
       role?: string;
-      createdAt?: string;
+      _createdAt?: string;
     };
   }
 }

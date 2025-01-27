@@ -46,17 +46,12 @@ const isExternalProduct = (prod: Product | ExternalProduct): prod is ExternalPro
 function CarouselItem({ product }: { product: Product | ExternalProduct }) {
   const getImageUrl = () => {
     try {
-      if (typeof product.image === 'string') {
-        return product.image;
+      if ('productImage' in product && product.productImage) {
+        return product.productImage;
       }
       
-      if ('productImage' in product && product.productImage && typeof product.productImage === 'object' && '_type' in product.productImage) {
-        return urlFor(product.productImage)
-          .width(1200)
-          .height(800)
-          .fit('crop')
-          .crop('center')
-          .url();
+      if ('image' in product && product.image) {
+        return product.image;
       }
 
       return PLACEHOLDER_IMAGE;
@@ -73,18 +68,14 @@ function CarouselItem({ product }: { product: Product | ExternalProduct }) {
 
   return (
     <Link href={`/${productType}/${productId}`}>
-      <div className="relative w-full aspect-[16/9] h-[400px] md:h-[500px]">
+      <div className="relative w-full aspect-[4/3] h-[400px] md:h-[600px]">
         <Image
           src={imageUrl}
           alt={`Product image of ${productName}`}
           fill
-          className="object-cover object-center"
+          className="object-contain bg-white"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
           priority={true}
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = PLACEHOLDER_IMAGE;
-          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
           <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8">

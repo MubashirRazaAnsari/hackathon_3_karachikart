@@ -15,10 +15,15 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: 'KarachiKart',
   description: 'Your app description',
-  viewport: 'width=device-width, initial-scale=1',
   icons: {
     icon: '/favicon.ico',
   },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({

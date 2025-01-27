@@ -135,7 +135,7 @@ export default function ProfilePage() {
             <h1 className="text-2xl font-bold">{session.user?.name}</h1>
             <p className="text-gray-600">{session.user?.email}</p>
             <p className="text-sm text-gray-500 mt-1">
-              Member since {session.user?.createdAt ? new Date(session.user.createdAt).toLocaleDateString() : 'N/A'}
+              Member since {session.user?._createdAt ? new Date(session.user._createdAt).toLocaleDateString() : 'N/A'}
             </p>
           </div>
         </div>
@@ -202,14 +202,16 @@ export default function ProfilePage() {
           <div className="bg-white rounded-lg shadow divide-y">
             {recentOrders.map((order: any) => (
               <div key={order._id} className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <p className="font-medium">Order #{order.orderNumber}</p>
+                <div className="flex flex-wrap justify-between items-start mb-2 gap-2">
+                  <div className="max-w-[70%]">
+                    <p className="font-base overflow-hidden text-ellipsis whitespace-nowrap">
+                      {order.orderNumber}
+                    </p>
                     <p className="text-sm text-gray-600">
                       {new Date(order._createdAt).toLocaleDateString()}
                     </p>
                   </div>
-                  <span className={`px-2 py-1 text-xs rounded-full ${
+                  <span className={`inline-block px-2 py-1 text-xs rounded-full whitespace-nowrap ${
                     order.status === 'completed' 
                       ? 'bg-green-100 text-green-800'
                       : 'bg-yellow-100 text-yellow-800'

@@ -15,10 +15,12 @@ export default function SellerLayout({
 }) {
   return (
     <div className="min-h-screen bg-gray-100">
-      <SellerNavigation />
-      <main className="flex-1 p-4 sm:p-6 lg:p-8">
-        {children}
-      </main>
+      <div className="flex pt-2">
+        <SellerNavigation />
+        <main className="flex-1 p-2 overflow-auto max-h-[calc(100vh-4rem)]">
+          {children}
+        </main>
+      </div>
     </div>
   );
 } 
